@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+	<!-- 配置SpringMVC -->
+	<!-- 1.开启SpringMVC注解模式 -->
+	<!-- 简化配置： (1)自动注册DefaultAnootationHandlerMapping,AnotationMethodHandlerAdapter 
+		(2)提供一些列：数据绑定，数字和日期的format @NumberFormat, @DateTimeFormat, xml,json默认读写支持 -->
+	<mvc:annotation-driven />
+
+	<!-- 2.静态资源默认servlet配置 (1)加入对静态资源的处理：js,gif,png (2)允许使用"/"做整体映射 -->
+	<mvc:default-servlet-handler />
+
+	<!-- 3.配置jsp 显示ViewResolver -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	<bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+		<property name="mediaTypes">
+			<map>
+				<entry key="html" value="application/json;charset=UTF-8"/>
+			</map>
+		</property>
+	</bean>
+
+	<!-- 配置文件上传下载 -->
+	<bean id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="UTF-8"></property>
+        <property name="maxUploadSize" value="5400000"></property>
+    </bean>
+    
+    <!-- 配置日期转换 -->
+    <bean id="convertDateConfig" 
+    	class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="webBindingInitializer">
+			<bean class="cn.roothub.config.ConvertDateConfig"/>
+		</property>
+	</bean>
+
+	<!-- 4.扫描web相关的bean -->
+	<context:component-scan base-package="cn.roothub.web" />
+	<!-- 全局拦截器 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/topic/create" />
+			<mvc:mapping path="/topic/save" />
+			<mvc:mapping path="/reply/save" />
+			<mvc:mapping path="/collect/topics" />
+			<mvc:mapping path="/collect/isCollect" />
+			<mvc:mapping path="/collect/save" />
+			<mvc:mapping path="/collect/delete" />
+			<mvc:mapping path="/follow/save" />
+			<mvc:mapping path="/follow/delete" />
+			<mvc:mapping path="/follow/count/for" />
+			<mvc:mapping path="/follow/count/to" />
+			<mvc:mapping path="/follow/topics" />
+			<mvc:mapping path="/notification/list" />
+			<mvc:mapping path="/user/settings/profile" />
+			<mvc:mapping path="/user/setting/profile" />
+			<mvc:mapping path="/user/settings/changeAvatar" />
+			<mvc:mapping path="/user/setting/changeAvatar" />
+			<mvc:mapping path="/user/settings/changePassword" />
+			<mvc:mapping path="/user/setting/changePassword" />
+			<mvc:mapping path="/user/topics" />
+
+			<mvc:mapping path="/vote" />
+			<mvc:mapping path="/?tab=member" />
+			<!-- 定义在mvc:interceptor下面的表示是对特定的请求才进行拦截的 -->
+			<bean class="cn.roothub.handler.GlobalInterceptorHandler" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+</beans>
